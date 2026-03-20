@@ -5,22 +5,28 @@ import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
 import { useState } from 'react';
 import { TodoForm } from './components/TodoForm/TodoForm';
-import { TodoList } from './components/TodoList';
+import { TodoList } from './components/TodoList/TodoList';
 
 export const App = () => {
   const [users] = useState(usersFromServer);
-  const todosFromServerWithUsers: Todo[] = todosFromServer.map(todo => ({
-    ...todo,
-    user: usersFromServer.find(u => u.id === todo.userId)!,
+
+  // описові змінні без конфлікту
+  const todosFromServerWithUsers: Todo[] = todosFromServer.map(todoItem => ({
+    ...todoItem,
+    user: usersFromServer.find(todoUser => todoUser.id === todoItem.userId)!,
   }));
 
   const [todos, setTodos] = useState<Todo[]>(todosFromServerWithUsers);
 
   const addTodo = (title: string, userId: number) => {
-    const newId = todos.length ? Math.max(...todos.map(t => t.id)) + 1 : 1;
-    const user = users.find(u => u.id === userId);
+    // описова змінна для max id
+    const newId = todos.length
+      ? Math.max(...todos.map(existingTodo => existingTodo.id)) + 1
+      : 1;
 
-    if (!user) {
+    const selectedUser = users.find(user => user.id === userId);
+
+    if (!selectedUser) {
       return;
     }
 
@@ -29,10 +35,10 @@ export const App = () => {
       title,
       userId,
       completed: false,
-      user,
+      user: selectedUser,
     };
 
-    setTodos(prev => [...prev, newTodo]);
+    setTodos(prevTodos => [...prevTodos, newTodo]);
   };
 
   return (
@@ -40,6 +46,7 @@ export const App = () => {
       <h1>Add todo form</h1>
 
       <TodoForm users={users} onAdd={addTodo} />
+
       <TodoList todos={todos} />
     </div>
   );
