@@ -12,8 +12,8 @@ export const TodoForm: React.FC<Props> = ({ users, onAdd }) => {
   const [titleError, setTitleError] = useState('');
   const [userError, setUserError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
     let hasError = false;
 
@@ -42,13 +42,18 @@ export const TodoForm: React.FC<Props> = ({ users, onAdd }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="field">
+        <label htmlFor="titleInput">Title</label>
         <input
+          id="titleInput"
           type="text"
           data-cy="titleInput"
           placeholder="Enter title"
           value={title}
-          onChange={e => {
-            const clean = e.target.value.replace(/[^a-zA-Zа-яА-Я0-9 ]/g, '');
+          onChange={event => {
+            const clean = event.target.value.replace(
+              /[^a-zA-Zа-яА-Я0-9 ]/g,
+              '',
+            );
 
             setTitle(clean);
             setTitleError('');
@@ -58,11 +63,13 @@ export const TodoForm: React.FC<Props> = ({ users, onAdd }) => {
       </div>
 
       <div className="field">
+        <label htmlFor="userSelect">User</label>
         <select
+          id="userSelect"
           data-cy="userSelect"
           value={userId}
-          onChange={e => {
-            setUserId(e.target.value);
+          onChange={event => {
+            setUserId(event.target.value);
             setUserError('');
           }}
         >
